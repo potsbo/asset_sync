@@ -53,11 +53,11 @@ module AssetSync
     end
 
     def warn(msg)
-      stderr.puts msg
+      stderr.puts "#{Time.new.to_s}: #{msg}"
     end
 
     def log(msg)
-      stdout.puts msg unless config.log_silently?
+      stdout.puts "#{Time.new.to_s}: #{msg}" unless config.log_silently?
     end
 
     def enabled?
