@@ -244,7 +244,9 @@ module AssetSync
     def upload_files
       remote_files = []
       if self.cache_file && File.file?(self.cache_file)
+        log "start loading cache #{self.cache_file}"
         remote_files = JSON.parse(File.read(self.cache_file))
+        log "finished loading cache #{self.cache_file}"
       else
         # get a fresh list of remote files
         remote_files = ignore_existing_remote_files? ? [] : get_remote_files
