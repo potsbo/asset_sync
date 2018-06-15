@@ -269,9 +269,12 @@ module AssetSync
       end
 
       if self.cache_file
+        log "start writing cache file to #{self.cache_file}"
         File.open(self.cache_file, 'w') do |file|
-          file.write(local_files_to_upload.to_json)
+          uploaded = local_files_to_upload + remote_files
+          file.write(uploaded.to_json)
         end
+        log "finished writing cache file to #{self.cache_file}"
       end
     end
 
