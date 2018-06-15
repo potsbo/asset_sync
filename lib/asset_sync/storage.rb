@@ -37,6 +37,10 @@ module AssetSync
       self.config.public_path
     end
 
+    def cache_file
+      self.config.cache_file
+    end
+
     def ignored_files
       expand_file_names(self.config.ignored_files)
     end
