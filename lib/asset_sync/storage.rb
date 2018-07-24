@@ -37,6 +37,10 @@ module AssetSync
       self.config.public_path
     end
 
+    def cache_file
+      self.config.cache_file
+    end
+
     def ignored_files
       expand_file_names(self.config.ignored_files)
     end
@@ -114,7 +118,9 @@ module AssetSync
       # fixes: https://github.com/rumblelabs/asset_sync/issues/16
       #        (work-around for https://github.com/fog/fog/issues/596)
       files = []
+      log 'start fetching bucket'
       bucket.files.each { |f| files << f.key }
+      log 'finished fetching bucket'
       return files
     end
 
@@ -236,11 +242,20 @@ module AssetSync
     end
 
     def upload_files
-      # get a fresh list of remote files
-      remote_files = ignore_existing_remote_files? ? [] : get_remote_files
+      remote_files = []
+      if self.cache_file && File.file?(self.cache_file)
+        log "start loading cache #{self.cache_file}"
+        remote_files = JSON.parse(File.read(self.cache_file))
+        log "finished loading cache #{self.cache_file}"
+      else
+        # get a fresh list of remote files
+        remote_files = ignore_existing_remote_files? ? [] : get_remote_files
+      end
       # fixes: https://github.com/rumblelabs/asset_sync/issues/19
+      log 'start generating upload files list'
       local_files_to_upload = local_files - ignored_files - remote_files + always_upload_files
       local_files_to_upload = (local_files_to_upload + get_non_fingerprinted(local_files_to_upload)).uniq
+      log 'finished generating upload files list'
 
       # Upload new files
       local_files_to_upload.each do |f|
@@ -253,6 +268,15 @@ module AssetSync
         cdn ||= Fog::CDN.new(self.config.fog_options.except(:region))
         data = cdn.post_invalidation(self.config.cdn_distribution_id, files_to_invalidate)
         log "Invalidation id: #{data.body["Id"]}"
+      end
+
+      if self.cache_file
+        log "start writing cache file to #{self.cache_file}"
+        File.open(self.cache_file, 'w') do |file|
+          uploaded = local_files_to_upload + remote_files
+          file.write(uploaded.to_json)
+        end
+        log "finished writing cache file to #{self.cache_file}"
       end
     end
 

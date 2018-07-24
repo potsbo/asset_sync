@@ -25,6 +25,7 @@ module AssetSync
     attr_accessor :cdn_distribution_id
     attr_accessor :cache_asset_regexps
     attr_accessor :include_manifest
+    attr_accessor :cache_file
 
     # FOG configuration
     attr_accessor :fog_provider          # Currently Supported ['AWS', 'Rackspace']
@@ -75,6 +76,7 @@ module AssetSync
       self.invalidate = []
       self.cache_asset_regexps = []
       self.include_manifest = false
+      self.cache_file = nil
       @additional_local_file_paths_procs = []
 
       load_yml! if defined?(::Rails) && yml_exists?
