@@ -47,7 +47,7 @@ module AssetSync
 
     def get_manifest_path
       return [] unless self.config.include_manifest
-        
+
       if ActionView::Base.respond_to?(:assets_manifest)
         manifest = Sprockets::Manifest.new(ActionView::Base.assets_manifest.environment, ActionView::Base.assets_manifest.dir)
         manifest_path = manifest.filename
@@ -138,9 +138,15 @@ module AssetSync
       from_remote_files_to_delete = remote_files - local_files - ignored_files - always_upload_files
 
       log "Flagging #{from_remote_files_to_delete.size} file(s) for deletion"
-      # Delete unneeded remote files
-      bucket.files.each do |f|
-        delete_file(f, from_remote_files_to_delete)
+      # Delete unneeded remote files, if we are on aws delete in bulk else use sequential delete
+      if self.config.aws? && connection.respond_to?(:delete_multiple_objects)
+        from_remote_files_to_delete.each_slice(500) do |slice|
+          connection.delete_multiple_objects(config.fog_directory, slice)
+        end
+      else
+        bucket.files.each do |f|
+          delete_file(f, from_remote_files_to_delete)
+        end
       end
     end
 
@@ -154,9 +160,16 @@ module AssetSync
       file = {
         :key => f,
         :body => file_handle,
-        :public => true,
         :content_type => mime
       }
+
+      # region fog_public
+
+      if config.fog_public.use_explicit_value?
+        file[:public] = config.fog_public.to_bool
+      end
+
+      # endregion fog_public
 
       uncompressed_filename = f.sub(/\.gz\z/, '')
       basename = File.basename(uncompressed_filename, File.extname(uncompressed_filename))
@@ -230,12 +243,6 @@ module AssetSync
         })
       end
 
-      if config.azure_rm?
-        # converts content_type from MIME::Type to String.
-        # because Azure::Storage (called from Fog::AzureRM) expects content_type as a String like "application/json; charset=utf-8"
-        file[:content_type] = file[:content_type].content_type if file[:content_type].is_a?(::MIME::Type)
-      end
-
       bucket.files.create( file ) unless ignore
       file_handle.close
       gzip_file_handle.close if gzip_file_handle
@@ -257,10 +264,28 @@ module AssetSync
       local_files_to_upload = (local_files_to_upload + get_non_fingerprinted(local_files_to_upload)).uniq
       log 'finished generating upload files list'
 
-      # Upload new files
-      local_files_to_upload.each do |f|
-        next unless File.file? "#{path}/#{f}" # Only files.
-        upload_file f
+      local_files_to_upload = local_files_to_upload.select { |f| File.file? "#{path}/#{f}" }
+
+      if self.config.concurrent_uploads
+        jobs = Queue.new
+        local_files_to_upload.each { |f| jobs.push(f) }
+        jobs.close
+
+        num_threads = [self.config.concurrent_uploads_max_threads, local_files_to_upload.length].min
+        # Upload new files
+        workers = Array.new(num_threads) do
+          Thread.new do
+            while f = jobs.pop
+              upload_file(f)
+            end
+          end
+        end
+        workers.map(&:join)
+      else
+        # Upload new files
+        local_files_to_upload.each do |f|
+          upload_file f
+        end
       end
 
       if self.config.cdn_distribution_id && files_to_invalidate.any?
