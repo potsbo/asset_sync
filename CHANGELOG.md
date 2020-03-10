@@ -18,6 +18,99 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Nothing
 
 
+## [2.10.0] - 2020-02-26
+
+### Added
+
+- Add option `concurrent_uploads_max_threads` to limit number of threads for uploading files
+  (https://github.com/AssetSync/asset_sync/pull/398)
+
+
+## [2.9.1] - 2020-02-20
+
+### Fixed
+
+- Fix uploading of sprockets manifest file
+  (https://github.com/AssetSync/asset_sync/pull/397)
+
+
+## [2.9.0] - 2020-01-15
+
+### Added
+
+- Add option `concurrent_uploads` to improve speed of uploading
+  (https://github.com/AssetSync/asset_sync/pull/393)
+
+
+## [2.8.2] - 2019-12-27
+
+### Changed
+
+- Use `delete_multiple_objects` when storage is `aws`
+  (https://github.com/AssetSync/asset_sync/pull/392)
+
+
+## [2.8.1] - 2019-07-25
+
+### Changed
+
+- Removed `rubyforge_project` from gemspec
+  (https://github.com/AssetSync/asset_sync/pull/386)
+
+### Fixed
+
+- Fixed when `fog_public` set to `false`, file were still set to be public
+  (https://github.com/AssetSync/asset_sync/pull/387)
+
+
+## [2.8.0] - 2019-06-17
+
+### Added
+
+- Add option `fog_port`
+  (https://github.com/AssetSync/asset_sync/pull/385)
+
+
+## [2.7.0] - 2019-03-15
+
+### Added
+
+- Adds JSON API support when using Google Storage
+  (https://github.com/AssetSync/asset_sync/pull/381)
+
+### Changed
+
+- Update `AssetSync::MultiMime.lookup` to always return strings (kind of internal change)
+  (https://github.com/AssetSync/asset_sync/pull/380)
+
+
+## [2.6.0] - 2018-12-07
+
+### Added
+
+- Add option `fog_public`
+  (https://github.com/AssetSync/asset_sync/pull/377)
+
+
+## [2.5.0] - 2018-10-25
+
+### Added
+
+- Add ruby only option `file_ext_to_mime_type_overrides`
+  (https://github.com/AssetSync/asset_sync/pull/374)
+
+### Changed
+
+- Start testing against rails 5.2, stop testing against rails 4.1
+
+### Fixed
+
+- Only enhance rake task assets:precompile if it's defined
+  (https://github.com/AssetSync/asset_sync/commit/e1eb1a16b06fd39def1759428a2d94733915bbff)
+- Avoid ruby warning due to "method redefined"
+  (https://github.com/AssetSync/asset_sync/pull/371)
+
+
 ## [2.4.0] - 2017-12-20
 
 ### Added
@@ -78,7 +171,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Only support mime-type >= 2.99,  
   which is released at the end of 2015  
-- Only support mactivemodel >= 4.1,  
+- Only support activemodel >= 4.1,  
   which is released in 2014  
 
 
@@ -861,7 +954,16 @@ Changes:
     * Merge branch 'sinatra'
 
 
-[Unreleased]: https://github.com/AssetSync/asset_sync/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/AssetSync/asset_sync/compare/v2.10.0...HEAD
+[2.10.0]: https://github.com/AssetSync/asset_sync/compare/v2.9.1...v2.10.0
+[2.9.1]: https://github.com/AssetSync/asset_sync/compare/v2.9.0...v2.9.1
+[2.9.0]: https://github.com/AssetSync/asset_sync/compare/v2.8.2...v2.9.0
+[2.8.2]: https://github.com/AssetSync/asset_sync/compare/v2.8.1...v2.8.2
+[2.8.1]: https://github.com/AssetSync/asset_sync/compare/v2.8.0...v2.8.1
+[2.8.0]: https://github.com/AssetSync/asset_sync/compare/v2.7.0...v2.8.0
+[2.7.0]: https://github.com/AssetSync/asset_sync/compare/v2.6.0...v2.7.0
+[2.6.0]: https://github.com/AssetSync/asset_sync/compare/v2.5.0...v2.6.0
+[2.5.0]: https://github.com/AssetSync/asset_sync/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/AssetSync/asset_sync/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/AssetSync/asset_sync/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/AssetSync/asset_sync/compare/v2.1.0...v2.2.0

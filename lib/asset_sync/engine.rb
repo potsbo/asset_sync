@@ -17,6 +17,7 @@ module AssetSync
           config.fog_directory = ENV['FOG_DIRECTORY'] if ENV.has_key?('FOG_DIRECTORY')
           config.fog_region = ENV['FOG_REGION'] if ENV.has_key?('FOG_REGION')
           config.fog_host = ENV['FOG_HOST'] if ENV.has_key?('FOG_HOST')
+          config.fog_port = ENV['FOG_PORT'] if ENV.has_key?('FOG_PORT')
           config.fog_scheme = ENV['FOG_SCHEMA'] if ENV.has_key?('FOG_SCHEMA')
           config.fog_path_style = ENV['FOG_PATH_STYLE'] if ENV.has_key?('FOG_PATH_STYLE')
 
@@ -41,6 +42,7 @@ module AssetSync
           config.gzip_compression = (ENV['ASSET_SYNC_GZIP_COMPRESSION'] == 'true') if ENV.has_key?('ASSET_SYNC_GZIP_COMPRESSION')
           config.manifest = (ENV['ASSET_SYNC_MANIFEST'] == 'true') if ENV.has_key?('ASSET_SYNC_MANIFEST')
           config.include_manifest = (ENV['ASSET_SYNC_INCLUDE_MANIFEST'] == 'true') if ENV.has_key?('ASSET_SYNC_INCLUDE_MANIFEST')
+          config.concurrent_uploads = (ENV['ASSET_SYNC_CONCURRENT_UPLOADS'] == 'true') if ENV.has_key?('ASSET_SYNC_CONCURRENT_UPLOADS')
         end
 
         config.prefix = ENV['ASSET_SYNC_PREFIX'] if ENV.has_key?('ASSET_SYNC_PREFIX')

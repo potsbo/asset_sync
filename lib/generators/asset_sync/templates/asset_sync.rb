@@ -13,6 +13,9 @@ if defined?(AssetSync)
     # Change host option in fog (only if you need to)
     # config.fog_host = "s3.amazonaws.com"
     #
+    # Change port option in fog (only if you need to)
+    # config.fog_port = "9000"
+    #
     # Use http instead of https. Default should be "https" (at least for fog-aws)
     # config.fog_scheme = "http"
     <%- elsif google? -%>
@@ -42,6 +45,11 @@ if defined?(AssetSync)
     # Increase upload performance by configuring your region
     # config.fog_region = 'eu-west-1'
     #
+    # Set `public` option when uploading file depending on value,
+    # Setting to "default" makes asset sync skip setting the option
+    # Possible values: true, false, "default" (default: true)
+    # config.fog_public = true
+    #
     # Don't delete files from the store
     # config.existing_remote_files = "keep"
     #
@@ -54,6 +62,9 @@ if defined?(AssetSync)
     #
     # Upload the manifest file also.
     # config.include_manifest = false
+    #
+    # Upload files concurrently
+    # config.concurrent_uploads = false
     #
     # Fail silently.  Useful for environments such as Heroku
     # config.fail_silently = true
